@@ -13,19 +13,22 @@ QVBox3 = QtWidgets.QVBoxLayout()
 QVBox1 = QtWidgets.QVBoxLayout()
 
 ToDos = {}
+settings = load_json("settings.json")
+json_path = settings["latest_json"] 
 
-json_path = ""
 
 def setItems(json):
     List.clear()
-    
     for i in json:
         QtWidgets.QListWidgetItem(i,List)
 
 def json_file_dialog():
     global ToDos
     global json_path
+    global settings
     json_path = QtWidgets.QFileDialog.getOpenFileName()[0]
+    settings["latest_json"] = json_path
+    save_json(settings,"settings.json")
     ToDos = load_json(json_path)
     setItems(ToDos)
     
@@ -46,7 +49,6 @@ def create_todo():
     ToDos = load_json(json_path)
     setItems(ToDos)
 
-
 def search_by_date():
     global ToDos
     Date = str(QDate.selectedDate().toPython()).split("-")
@@ -55,10 +57,17 @@ def search_by_date():
         if ToDos[i][1] == Date[2] and ToDos[i][2] == Date[2] and ToDos[i][3] == Date[0]:
             pass
             
+def delete_todo():
+    global json_path
+    ToDos.pop(List.currentItem().text())
+    setItems(ToDos)
+    save_json(ToDos,json_path)
+
 
 CreateBtn = QtWidgets.QPushButton(text="Создать")
 LoadBtn = QtWidgets.QPushButton(text="Загрузить")
 SaveBtn = QtWidgets.QPushButton(text="Сохранить")
+DeleteBtn = QtWidgets.QPushButton(text="Удалить")
 TimeLable = QtWidgets.QLabel(text="")
 
 List = QtWidgets.QListWidget()
@@ -75,8 +84,9 @@ QVBox.addWidget(List)
 QVBox.addWidget(LoadBtn)
 QVBox.addWidget(CreateBtn)
 QVBox3.addWidget(QDate)
+QVBox3.addWidget(TimeLable)
 QVBox1.addWidget(TextField)
-QVBox1.addWidget(TimeLable)
+QVBox1.addWidget(DeleteBtn)
 QVBox1.addWidget(SaveBtn)
 QHBox.addLayout(QVBox1)
 QHBox.addLayout(QVBox3)
@@ -88,6 +98,11 @@ LoadBtn.clicked.connect(json_file_dialog)
 List.currentItemChanged.connect(load_text)
 SaveBtn.clicked.connect(save_text)
 QDate.clicked.connect(search_by_date)
+DeleteBtn.clicked.connect(delete_todo)
+if settings["latest_json"] != "":
+    ToDos = load_json(json_path)
+    setItems(ToDos)
+
 if __name__ == "__main__":
     window.show()
     app.exec()
