@@ -51,10 +51,10 @@ def create_todo():
 
 def search_by_date():
     global ToDos
-    Date = str(QDate.selectedDate().toPython()).split("-")
+    Date_cal = str(Date.selectedDate().toPython()).split("-")
     
     for i in ToDos:
-        if ToDos[i][1] == Date[2] and ToDos[i][2] == Date[2] and ToDos[i][3] == Date[0]:
+        if ToDos[i][1] == Date_cal[2] and ToDos[i][2] == Date_cal[2] and ToDos[i][3] == Date_cal[0]:
             pass
             
 def delete_todo():
@@ -72,18 +72,18 @@ TimeLable = QtWidgets.QLabel(text="")
 
 List = QtWidgets.QListWidget()
 TextField = QtWidgets.QTextEdit()
-QDate = QtWidgets.QCalendarWidget()
+Date = QtWidgets.QCalendarWidget()
 
 List.setFixedSize(100,250)
 TextField.setFixedSize(450,250)
-QDate.setFixedSize(300, 200)
+Date.setFixedSize(300, 200)
 QHBox.setSpacing(3)
 QHBox.addLayout(QVBox)
 
 QVBox.addWidget(List)
 QVBox.addWidget(LoadBtn)
 QVBox.addWidget(CreateBtn)
-QVBox3.addWidget(QDate)
+QVBox3.addWidget(Date)
 QVBox3.addWidget(TimeLable)
 QVBox1.addWidget(TextField)
 QVBox1.addWidget(DeleteBtn)
@@ -97,7 +97,7 @@ CreateBtn.clicked.connect(create_todo)
 LoadBtn.clicked.connect(json_file_dialog)
 List.currentItemChanged.connect(load_text)
 SaveBtn.clicked.connect(save_text)
-QDate.clicked.connect(search_by_date)
+Date.clicked.connect(search_by_date)
 DeleteBtn.clicked.connect(delete_todo)
 if settings["latest_json"] != "":
     ToDos = load_json(json_path)
