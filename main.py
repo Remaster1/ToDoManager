@@ -111,6 +111,7 @@ DeleteBtn.clicked.connect(delete_todo)
 
 if settings["latest_json"] != "":
     ToDos = load_json(json_path)
+    setItems(ToDos)
 
 if __name__ == "__main__":
     window.show()
