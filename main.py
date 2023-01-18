@@ -1,4 +1,4 @@
-from PySide6 import QtWidgets,QtCore
+from PySide6 import QtWidgets,QtCore,QtGui
 from json_parser import *
 import datetime
 
@@ -33,29 +33,37 @@ def json_file_dialog():
     setItems(ToDos)
     
 def load_text():
-    TextField.setText(ToDos[List.currentItem().text()][0])
-    TimeLable.setText(f"{ToDos[List.currentItem().text()][1]}.{ToDos[List.currentItem().text()][2]}.{ToDos[List.currentItem().text()][3]}")
+    TextField.setText(ToDos[List.currentItem().text()]["text"])
+    TimeLable.setText(str(ToDos[List.currentItem().text()]["date"][0])+"."+str(ToDos[List.currentItem().text()]["date"][1])+"."+str(ToDos[List.currentItem().text()]["date"][2]))
     
 def save_text():
-    ToDos[List.currentItem().text()][0] = TextField.toPlainText()
+    ToDos[List.currentItem().text()]["text"] = TextField.toPlainText()
     save_json(ToDos,json_path)
 
 def create_todo():
     global ToDos
     Input_Todo = QtWidgets.QInputDialog.getText(window,"Новая задача","Введите название задачи:")
     now = datetime.datetime.now()
-    ToDos.update({str(Input_Todo[0]):[" ",now.day,now.month,now.year]})
+    ToDos.update({str(Input_Todo[0]):{"text":" ","date":[now.day,now.month,now.year]}})
     save_json(ToDos,json_path)
     ToDos = load_json(json_path)
     setItems(ToDos)
 
 def search_by_date():
     global ToDos
+    for i in ToDos:
+        CurrentSelectedToDos = List.findItems(i,QtCore.Qt.MatchFlag.MatchRegularExpression)
+        for CurrentSelectToDo in CurrentSelectedToDos:
+                CurrentSelectToDo.setBackground(QtGui.QColor(255, 255, 255))
+
     Date_cal = str(Date.selectedDate().toPython()).split("-")
     
     for i in ToDos:
-        if ToDos[i][1] == Date_cal[2] and ToDos[i][2] == Date_cal[2] and ToDos[i][3] == Date_cal[0]:
-            pass
+        if ToDos[i]["date"][0] == int(Date_cal[2]) and ToDos[i]["date"][1] == int(Date_cal[1]) and ToDos[i]["date"][2] == int(Date_cal[0]):
+            CurrentSelectedToDos = List.findItems(i,QtCore.Qt.MatchFlag.MatchRegularExpression)
+            for CurrentSelectToDo in CurrentSelectedToDos:
+                CurrentSelectToDo.setBackground(QtGui.QColor(3, 19, 252))
+
             
 def delete_todo():
     global json_path
