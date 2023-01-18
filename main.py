@@ -51,6 +51,7 @@ def create_todo():
 
 def search_by_date():
     global ToDos
+   
     for i in ToDos:
         CurrentSelectedToDos = List.findItems(i,QtCore.Qt.MatchFlag.MatchRegularExpression)
         for CurrentSelectToDo in CurrentSelectedToDos:
@@ -107,9 +108,9 @@ List.currentItemChanged.connect(load_text)
 SaveBtn.clicked.connect(save_text)
 Date.clicked.connect(search_by_date)
 DeleteBtn.clicked.connect(delete_todo)
+
 if settings["latest_json"] != "":
     ToDos = load_json(json_path)
-    setItems(ToDos)
 
 if __name__ == "__main__":
     window.show()
