@@ -9,7 +9,6 @@ json_path = settings["latest_json"]
 app = QtWidgets.QApplication([])
 window = QtWidgets.QMainWindow()
 window.setWindowTitle("ToDo Manager")
-
 widget = QtWidgets.QWidget(window)
 MainQVBox = QtWidgets.QVBoxLayout()
 QHBox = QtWidgets.QHBoxLayout()
@@ -33,6 +32,7 @@ def json_file_dialog():
     save_json(settings,"settings.json")
     ToDos = load_json(json_path)
     setItems(ToDos)
+    PathLabel.setText("Путь:"+json_path)
     
 def load_text():
     TextField.setText(ToDos[List.currentItem().text()]["text"])
@@ -85,7 +85,7 @@ def change_complete_status():
 
 Menu = QtWidgets.QMenuBar()
 CreateBtn = QtWidgets.QPushButton(text="+")
-SaveBtn = QtWidgets.QPushButton(text="Сохранить")
+
 DeleteBtn = QtWidgets.QPushButton(text="-")
 TimeLable = QtWidgets.QLabel(text="")
 List = QtWidgets.QListWidget()
@@ -94,7 +94,7 @@ Date = QtWidgets.QCalendarWidget()
 LoadAction = QtGui.QAction("Загрузить")
 SaveAction = QtGui.QAction("Сохранить")
 CheckBoxComplete = QtWidgets.QCheckBox(text="Выполнено")
-
+PathLabel = QtWidgets.QLabel(text="Путь:")
 
 CreateBtn.setFixedWidth(49)
 DeleteBtn.setFixedWidth(49)
@@ -102,8 +102,6 @@ List.setFixedSize(100,250)
 TextField.setFixedSize(450,250)
 Date.setFixedSize(300, 200)
 MainQVBox.setContentsMargins(4,0,4,4)
-
-
 
 ToDoListMenu = Menu.addMenu("Список")
 ToDoListMenu.addAction(LoadAction)
@@ -118,10 +116,10 @@ QVBox.addLayout(QHBox2)
 QHBox2.addWidget(CreateBtn)
 QHBox2.addWidget(DeleteBtn)
 QVBox3.addWidget(Date)
-QVBox3.addWidget(TimeLable)
 QVBox3.addWidget(CheckBoxComplete)
+QVBox3.addWidget(PathLabel)
 QVBox1.addWidget(TextField)
-QVBox1.addWidget(SaveBtn)
+QVBox1.addWidget(TimeLable)
 QHBox.addLayout(QVBox1)
 QHBox.addLayout(QVBox3)
 window.setCentralWidget(widget)
