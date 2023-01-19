@@ -2,19 +2,21 @@ from PySide6 import QtWidgets,QtCore,QtGui
 from json_parser import *
 import datetime
 
+ToDos = {}
+settings = load_json("settings.json")
+json_path = settings["latest_json"] 
+
 app = QtWidgets.QApplication([])
 window = QtWidgets.QMainWindow()
 window.setWindowTitle("ToDo Manager")
 
 widget = QtWidgets.QWidget(window)
+MainQVBox = QtWidgets.QVBoxLayout()
 QHBox = QtWidgets.QHBoxLayout()
 QVBox = QtWidgets.QVBoxLayout()
 QVBox3 = QtWidgets.QVBoxLayout()
 QVBox1 = QtWidgets.QVBoxLayout()
-
-ToDos = {}
-settings = load_json("settings.json")
-json_path = settings["latest_json"] 
+QHBox2 = QtWidgets.QHBoxLayout()
 
 
 def setItems(json):
@@ -35,6 +37,7 @@ def json_file_dialog():
 def load_text():
     TextField.setText(ToDos[List.currentItem().text()]["text"])
     TimeLable.setText(str(ToDos[List.currentItem().text()]["date"][0])+"."+str(ToDos[List.currentItem().text()]["date"][1])+"."+str(ToDos[List.currentItem().text()]["date"][2]))
+    CheckBoxComplete.setChecked(int(ToDos[List.currentItem().text()]["completed"]))
     
 def save_text():
     ToDos[List.currentItem().text()]["text"] = TextField.toPlainText()
@@ -44,7 +47,7 @@ def create_todo():
     global ToDos
     Input_Todo = QtWidgets.QInputDialog.getText(window,"Новая задача","Введите название задачи:")
     now = datetime.datetime.now()
-    ToDos.update({str(Input_Todo[0]):{"text":" ","date":[now.day,now.month,now.year]}})
+    ToDos.update({str(Input_Todo[0]):{"text":" ","date":[now.day,now.month,now.year],"completed":0}})
     save_json(ToDos,json_path)
     ToDos = load_json(json_path)
     setItems(ToDos)
@@ -73,41 +76,64 @@ def delete_todo():
     save_json(ToDos,json_path)
 
 
-CreateBtn = QtWidgets.QPushButton(text="Создать")
-LoadBtn = QtWidgets.QPushButton(text="Загрузить")
-SaveBtn = QtWidgets.QPushButton(text="Сохранить")
-DeleteBtn = QtWidgets.QPushButton(text="Удалить")
-TimeLable = QtWidgets.QLabel(text="")
+def change_complete_status():
+    if CheckBoxComplete.isChecked():
+        ToDos[List.currentItem().text()]["completed"] = int(1)
+    else:
+        ToDos[List.currentItem().text()]["completed"] = int(0)
+    save_json(ToDos,json_path)
 
+Menu = QtWidgets.QMenuBar()
+CreateBtn = QtWidgets.QPushButton(text="+")
+SaveBtn = QtWidgets.QPushButton(text="Сохранить")
+DeleteBtn = QtWidgets.QPushButton(text="-")
+TimeLable = QtWidgets.QLabel(text="")
 List = QtWidgets.QListWidget()
 TextField = QtWidgets.QTextEdit()
 Date = QtWidgets.QCalendarWidget()
+LoadAction = QtGui.QAction("Загрузить")
+SaveAction = QtGui.QAction("Сохранить")
+CheckBoxComplete = QtWidgets.QCheckBox(text="Выполнено")
 
+
+CreateBtn.setFixedWidth(49)
+DeleteBtn.setFixedWidth(49)
 List.setFixedSize(100,250)
 TextField.setFixedSize(450,250)
 Date.setFixedSize(300, 200)
+MainQVBox.setContentsMargins(4,0,4,4)
+
+
+
+ToDoListMenu = Menu.addMenu("Список")
+ToDoListMenu.addAction(LoadAction)
+ToDoListMenu.addAction(SaveAction)
+
+MainQVBox.addWidget(Menu)
+MainQVBox.addLayout(QHBox)
 QHBox.setSpacing(3)
 QHBox.addLayout(QVBox)
-
 QVBox.addWidget(List)
-QVBox.addWidget(LoadBtn)
-QVBox.addWidget(CreateBtn)
+QVBox.addLayout(QHBox2)
+QHBox2.addWidget(CreateBtn)
+QHBox2.addWidget(DeleteBtn)
 QVBox3.addWidget(Date)
 QVBox3.addWidget(TimeLable)
+QVBox3.addWidget(CheckBoxComplete)
 QVBox1.addWidget(TextField)
-QVBox1.addWidget(DeleteBtn)
 QVBox1.addWidget(SaveBtn)
 QHBox.addLayout(QVBox1)
 QHBox.addLayout(QVBox3)
 window.setCentralWidget(widget)
-widget.setLayout(QHBox)
+widget.setLayout(MainQVBox)
 
 CreateBtn.clicked.connect(create_todo)
-LoadBtn.clicked.connect(json_file_dialog)
+LoadAction.triggered.connect(json_file_dialog)
+SaveAction.triggered.connect(save_text)
 List.currentItemChanged.connect(load_text)
-SaveBtn.clicked.connect(save_text)
 Date.clicked.connect(search_by_date)
 DeleteBtn.clicked.connect(delete_todo)
+CheckBoxComplete.clicked.connect(change_complete_status)
 
 if settings["latest_json"] != "":
     ToDos = load_json(json_path)
