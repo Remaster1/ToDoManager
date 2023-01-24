@@ -3,7 +3,7 @@ from json_parser import *
 import datetime
 
 ToDos = {}
-settings = load_json("settings.json")
+settings = load_json("./settings.json")
 json_path = settings["latest_json"] 
 
 app = QtWidgets.QApplication([])
