@@ -1,3 +1,5 @@
 # ToDoManager
 Base ToDo manager.
-Install PySide6.
+Requiments:
+  - Python 3.x
+  - PyQt 6
